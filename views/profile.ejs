@@ -1,3 +1,10 @@
+<% include header.ejs %>
+
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="/jquery-1.11.1.js"></script>
+
+
+<div class="card flow-text hover-effect" style="margin-left:25%;width:50%;position:fixed;top:0">
 <p>
 ID: <%= user.id %><br/>
 Username: <%= user.username %><br/>
@@ -6,4 +13,41 @@ Name: <%= user.displayName %><br/>
 Email: <%= user.emails[0].value %><br/>
 <% } %>
 </p>
-<a href="/logout">Log out</a>
+<div style="text-align:center">
+<a class="waves-effect waves-light btn" href="/logout">Log out</a>
+</div>
+</div>
+
+
+<div style="position:absolute;bottom:0px">
+<form action="" class="white" style="width:300px">
+<input id="<%= user.username %>" autocomplete="off" />
+</form>
+</div>
+
+<div style="position:absolute;bottom:0px;left:350px">
+<form action="" class="white" style="width:300px">
+<input id="<%= user.username %>" autocomplete="off" />
+</form>
+</div>
+
+<ul id="messages"></ul>
+
+<script type="text/javascript">
+var socket = io();
+$('form').submit(function(){
+socket.emit('<%= user.username %>', $('.<%= user.username %>').val());
+$('.<%= user.username %>').val('');
+console.log("This is being sent!!");
+return false;
+});
+
+socket.on('jill_msg', function(msg){
+$('#messages').append($('<li>').text("Jill: "+msg));
+});
+
+socket.on('jack_msg', function(msg){
+$('#messages').append($('<li>').text("Jack: " +msg));
+});
+
+</script>

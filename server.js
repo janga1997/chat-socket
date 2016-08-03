@@ -23,7 +23,7 @@ passport.use(new Strategy(
 
 // Configure Passport authenticated session persistence.
 //
-// In order to restore authentication state across HTTP requests, Passport needs
+// In order to restore aputhentication state across HTTP requests, Passport needs
 // to serialize users into and deserialize users out of the session.  The
 // typical implementation of this is as simple as supplying the user ID when
 // serializing, and querying the user record by ID from the database when
@@ -45,6 +45,27 @@ passport.deserializeUser(function(id, cb) {
 // Create a new Express application.
 var app = express();
 
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+//Sending And Receiving Messages from clients
+io.on('connection', function(socket){
+
+  socket.on('aaacgjjkn', function(msg){
+    socket.broadcast.emit('aaacgjjkn', msg);
+  });
+  socket.on('acijjkll', function(msg){
+    socket.broadcast.emit('acijjkll', msg);
+  });
+  socket.on('aagijjlln', function(msg){
+    socket.broadcast.emit('aagijjlln', msg);
+  });
+
+  socket.on('disconnect', function(){
+    socket.broadcast.emit(socket.username,"offline");
+  });
+
+});
 // Configure view engine to render EJS templates.
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -56,6 +77,8 @@ app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 
+//Use Static js Files
+app.use(express.static('static'));
 // Initialize Passport and restore authentication state, if any, from the
 // session.
 app.use(passport.initialize());
@@ -71,13 +94,17 @@ app.get('/login',
   function(req, res){
     res.render('login');
   });
-  
+
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
+    res.redirect('/profile');
+    io.on('connection', function(socket){
+      socket.username = req.user.username;
+      socket.broadcast.emit(req.user.username,"online");
+    });
   });
-  
+
 app.get('/logout',
   function(req, res){
     req.logout();
@@ -87,7 +114,11 @@ app.get('/logout',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function(req, res){
-    res.render('profile', { user: req.user });
+    var array = ['jack','jill','john','jane'];
+    var i = array.indexOf(req.user.username);
+    if(i != -1) {
+      array.splice(i, 1);
+    }
+    res.render('chat', { user: req.user , total: array});
   });
-
-app.listen(3000);
+http.listen(3000);

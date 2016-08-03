@@ -1,5 +1,8 @@
+<% include header.ejs %>
 <% if (!user) { %>
-	<p>Welcome! Please <a href="/login">log in</a>.</p>
+
+	<p class="center-align">Welcome! Please <a class="waves-effect waves-light btn" href="/login">log in</a>.</p>
 <% } else { %>
-	<p>Hello, <%= user.username %>. View your <a href="/profile">profile</a>.</p>
+	<p>Hello, <%= user.username %>. View your <a class="waves-effect waves-light btn" href="/profile">profile</a>.</p>
+
 <% } %>
