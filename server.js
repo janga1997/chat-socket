@@ -11,32 +11,31 @@ var db = require('./db');
 // that the password is correct and then invoke `cb` with a user object, which
 // will be set at `req.user` in route handlers after authentication.
 passport.use(new Strategy(
-  function(username, password, cb) {
-    db.users.findByUsername(username, function(err, user) {
-      if (err) { return cb(err); }
-      if (!user) { return cb(null, false); }
-      if (user.password != password) { return cb(null, false); }
-      return cb(null, user);
-    });
-  }));
+	function(username, password, cb) {
+		db.users.findByUsername(username, function(err, user) {
+			if (err) { return cb(err); }
+			if (!user) { return cb(null, false); }
+			if (user.password != password) { return cb(null, false); }
+			return cb(null, user);
+		});
+	}));
 
 
 // Configure Passport authenticated session persistence.
-//
 // In order to restore aputhentication state across HTTP requests, Passport needs
 // to serialize users into and deserialize users out of the session.  The
 // typical implementation of this is as simple as supplying the user ID when
 // serializing, and querying the user record by ID from the database when
 // deserializing.
 passport.serializeUser(function(user, cb) {
-  cb(null, user.id);
+	cb(null, user.id);
 });
 
 passport.deserializeUser(function(id, cb) {
-  db.users.findById(id, function (err, user) {
-    if (err) { return cb(err); }
-    cb(null, user);
-  });
+	db.users.findById(id, function (err, user) {
+		if (err) { return cb(err); }
+		cb(null, user);
+	});
 });
 
 
@@ -51,19 +50,29 @@ var io = require('socket.io')(http);
 //Sending And Receiving Messages from clients
 io.on('connection', function(socket){
 
-  socket.on('aaacgjjkn', function(msg){
-    socket.broadcast.emit('aaacgjjkn', msg);
-  });
-  socket.on('acijjkll', function(msg){
-    socket.broadcast.emit('acijjkll', msg);
-  });
-  socket.on('aagijjlln', function(msg){
-    socket.broadcast.emit('aagijjlln', msg);
-  });
+	socket.on('acijjkll', function(msg){
+		socket.broadcast.emit('acijjkll', msg);
+	});
+	socket.on('aacejjkn', function(msg){
+		socket.broadcast.emit('aacejjkn', msg);
+	});
+	socket.on('achjjkno', function(msg){
+		socket.broadcast.emit('achjjkno', msg);
+	});
+	socket.on('aeijjlln', function(msg){
+		socket.broadcast.emit('aeijjlln', msg);
+	});
+	socket.on('hijjllno', function(msg){
+		socket.broadcast.emit('hijjllno', msg);
+	});
+	socket.on('aehjjnno', function(msg){
+		socket.broadcast.emit('aehjjnno', msg);
+	});
 
-  socket.on('disconnect', function(){
-    socket.broadcast.emit(socket.username,"offline");
-  });
+
+	socket.on('disconnect', function(){
+		socket.broadcast.emit(socket.username,"offline");
+	});
 
 });
 // Configure view engine to render EJS templates.
@@ -86,39 +95,40 @@ app.use(passport.session());
 
 // Define routes.
 app.get('/',
-  function(req, res) {
-    res.render('home', { user: req.user });
-  });
+	function(req, res) {
+		res.render('home', { user: req.user });
+	});
 
 app.get('/login',
-  function(req, res){
-    res.render('login');
-  });
+	function(req, res){
+		res.render('login');
+	});
 
 app.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/profile');
-    io.on('connection', function(socket){
-      socket.username = req.user.username;
-      socket.broadcast.emit(req.user.username,"online");
-    });
-  });
+	passport.authenticate('local', { failureRedirect: '/login' }),
+	function(req, res) {
+		res.redirect('/profile');
+		io.on('connection', function(socket){
+			socket.username = req.user.username;
+			socket.broadcast.emit(req.user.username,"online");
+		});
+	});
 
 app.get('/logout',
-  function(req, res){
-    req.logout();
-    res.redirect('/');
-  });
+	function(req, res){
+		req.logout();
+		res.redirect('/');
+	});
 
 app.get('/profile',
-  require('connect-ensure-login').ensureLoggedIn(),
-  function(req, res){
-    var array = ['jack','jill','john','jane'];
-    var i = array.indexOf(req.user.username);
-    if(i != -1) {
-      array.splice(i, 1);
-    }
-    res.render('chat', { user: req.user , total: array});
-  });
+	require('connect-ensure-login').ensureLoggedIn(),
+	function(req, res){
+		var array = ['jack','jill','john','jane'];
+		var i = array.indexOf(req.user.username);
+		console.log(req.user.username);
+		if(i != -1) {
+			array.splice(i, 1);
+		}
+		res.render('chat', { user: req.user , total: array});
+	});
 http.listen(3000);

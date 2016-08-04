@@ -5,71 +5,79 @@
 
 
 <div class="card flow-text hover-effect" style="margin-left:25%;width:50%;position:fixed;top:0">
-<p>
-ID: <%= user.id %><br/>
-Username: <%= user.username %><br/>
-Name: <%= user.displayName %><br/>
-<% if (user.emails) { %>
-Email: <%= user.emails[0].value %><br/>
-<% } %>
-</p>
-<div style="text-align:center">
-<a class="waves-effect waves-light btn" href="/logout">Log out</a>
-</div>
-</div>
+	<p>
+		ID: <%= user.id %><br/>
+		Username: <%= user.username %><br/>
+		Name: <%= user.displayName %><br/>
+		<% if (user.emails) { %>
+			Email: <%= user.emails[0].value %><br/>
+			<% } %>
+		</p>
+		<div style="text-align:center">
+			<a class="waves-effect waves-light btn" href="/logout">Log out</a>
+		</div>
+	</div>
 
-<script type="text/javascript">
-var socket = io();
+	<script type="text/javascript">
+		var socket = io();
 
-var friends = <%- JSON.stringify(total) %>;
-var friendsNames = friends;
-friends = friends.map(function(e){ return e + "<%- user.username %>" });
-friends = friends.map(function(e) { return e.split("").sort().join("") });
-console.log(friends);
+		var friends = <%- JSON.stringify(total) %>;
+		var friendsNames = friends;
+		friends = friends.map(function(e){ return e + "<%- user.username %>" });
+		friends = friends.map(function(e) { return e.split("").sort().join("") });
+		console.log(friends);
 
-for (var i = 0; i < friends.length; i++) {
-	$("body").append('<div class="'+friends[i]+'" style="position:absolute;bottom:0px;left:'+ i*350 +'px"> <form action="" class="white" style="width:300px"><label>'+friendsNames[i]+'</label><input id="'+ friends[i] +'" autocomplete="off" /> </form> </div>');
-}
+		for (var i = 0; i < friends.length; i++) {
+			$("body").append('<div class="'+friends[i]+'" style="position:absolute;bottom:0px;left:'+ i*350 +'px"> <form action="" class="white" style="width:300px"><label>'+friendsNames[i]+'</label><input id="'+ friends[i] +'" autocomplete="off" /> </form> </div>');
+		}
 
-$("."+friends[0]+" form").submit(function(){
-socket.emit(friends[0], $("#"+friends[0]).val());
-$("."+friends[0]).append($('<p>').text("<%= user.username %>: "+$("#"+friends[0]).val()));
-$("#"+friends[0]).val('');
-return false;
-});
+		$("."+friends[0]+" form").submit(function(){
+			socket.emit(friends[0], $("#"+friends[0]).val());
+			$("."+friends[0]).append($('<p>').text("<%= user.username %>: "+$("#"+friends[0]).val()));
+			$("#"+friends[0]).val('');
+			return false;
+		});
 
-$("."+friends[1]+" form").submit(function(){
-socket.emit(friends[1], $("#"+friends[1]).val());
-$("."+friends[1]).append($('<p>').text("<%= user.username %>: "+$("#"+friends[1]).val()));
-$("#"+friends[1]).val('');
-return false;
-});
+		$("."+friends[1]+" form").submit(function(){
+			socket.emit(friends[1], $("#"+friends[1]).val());
+			$("."+friends[1]).append($('<p>').text("<%= user.username %>: "+$("#"+friends[1]).val()));
+			$("#"+friends[1]).val('');
+			return false;
+		});
+		$("."+friends[2]+" form").submit(function(){
+			socket.emit(friends[2], $("#"+friends[2]).val());
+			$("."+friends[2]).append($('<p>').text("<%= user.username %>: "+$("#"+friends[2]).val()));
+			$("#"+friends[2]).val('');
+			return false;
+		});
+		socket.on(friends[0], function(msg){
+			$("."+friends[0]).append($('<p>').text(friendsNames[0]+": "+msg));
+		});
 
-socket.on(friends[0], function(msg){
-$("."+friends[0]).append($('<p>').text(friendsNames[0]+": "+msg));
-});
+		socket.on(friends[1], function(msg){
+			$("."+friends[1]).append($('<p>').text(friendsNames[1]+": "+msg));
+		});
+		socket.on(friends[2], function(msg){
+			$("."+friends[2]).append($('<p>').text(friendsNames[2]+": "+msg));
+		});
 
-socket.on(friends[1], function(msg){
-$("."+friends[1]).append($('<p>').text(friendsNames[1]+": "+msg));
-});
+		/*socket.on(friendsNames[0], function(msg){
+			if (msg=="online"){
+				$("."+friends[0]+" form"+" label").css("color","green");
+			}
 
-socket.on(friendsNames[0], function(msg){
-	if (msg=="online"){
-	$("."+friends[0]+" form"+" label").css("color","green");
-	}
+			else{
+				$("."+friends[0]+" form"+" label").css("color","red");
+			}
+		});
 
-	else{
-	$("."+friends[0]+" form"+" label").css("color","red");
-	}
-});
+		socket.on(friendsNames[1], function(msg){
+			if (msg=="online"){
+				$("."+friends[0]+" form"+" label").css("color","green");
+			}
 
-socket.on(friendsNames[1], function(msg){
-	if (msg=="online"){
-	$("."+friends[0]+" form"+" label").css("color","green");
-	}
-
-	else{
-	$("."+friends[0]+" form"+" label").css("color","red");
-	}
-});
-</script>
+			else{
+				$("."+friends[0]+" form"+" label").css("color","red");
+			}
+		});*/
+	</script>
